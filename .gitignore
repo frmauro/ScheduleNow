@@ -1,0 +1,55 @@
+# === .NET Core / .NET 9 ===
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.user
+*.suo
+*.sln.docstates
+
+# Publish output
+publish/
+[Ss]etup*/
+
+# User-specific files
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.sln.docstates
+
+# Roslyn cache directories
+*.Selector-Language-Service.json
+
+# === Angular / Node.js ===
+node_modules/
+dist/
+.angular/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Angular CLI specific
+.editorconfig
+src/assets/temp/
+
+# === Testing ===
+StackTrace.txt
+testresults/
+*.coverage
+
+# === IDEs & Editors ===
+.idea/
+.vscode/
+*.swp
+*.bak
+*.tmp
+
+# === Environment Variables (Segurança!) ===
+.env
+.env.*
+appsettings.Development.json
+appsettings.Local.json
