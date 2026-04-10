@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Scheduling.Api.DTOs;
 using Scheduling.Domain.Entities;
 using Scheduling.Domain.Interfaces;
 using System.Security.Claims;
@@ -16,9 +17,17 @@ public class ServicesController(IRepository<Service> serviceRepository) : Contro
     private Guid GetTenantId() => Guid.Parse(User.Claims.First(c => c.Type == "TenantId").Value);
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Service service)
+    public async Task<IActionResult> Create([FromBody] CreateServiceDto dto)
     {
-        service.TenantId = GetTenantId();
+        var service = new Service
+        {
+            Name = dto.Name,
+            Description = dto.Description,
+            DurationMinutes = dto.DurationMinutes,
+            Price = dto.Price,
+            TenantId = GetTenantId()
+        };
+
         await _serviceRepository.AddAsync(service);
         await _serviceRepository.SaveChangesAsync();
         return Ok(service);

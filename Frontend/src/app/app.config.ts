@@ -11,6 +11,6 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([jwtInterceptor])),
-    importProvidersFrom(LucideAngularModule.forRoot({ LayoutDashboard, Calendar, Users, Briefcase, LogOut, Scissors, Pencil, Trash2, ChevronLeft, ChevronRight }))
+    importProvidersFrom(LucideAngularModule.pick({ LayoutDashboard, Calendar, Users, Briefcase, LogOut, Scissors, Pencil, Trash2, ChevronLeft, ChevronRight }))
   ]
 };
