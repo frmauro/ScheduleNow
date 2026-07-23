@@ -1,43 +1,116 @@
 <div class="min-h-screen bg-slate-50 p-6 flex items-center justify-center bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat">
   <div class="w-full max-w-2xl bg-white/70 backdrop-blur-3xl border border-white/20 shadow-2xl rounded-[40px] overflow-hidden">
-    <div class="p-10 border-b border-slate-100 text-center">
-       <div class="w-20 h-20 bg-indigo-600 rounded-3xl mx-auto mb-6 flex items-center justify-center text-white text-3xl font-black shadow-2xl shadow-indigo-200 rotate-3">DC</div>
-       <h1 class="text-3xl font-black text-slate-900 tracking-tight">Default Clinic</h1>
-       <p class="text-slate-500 mt-2">Escolha uma data e horário para seu agendamento</p>
-    </div>
-
-    <div class="p-10">
-       <div class="space-y-8">
-          <section>
-             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">1. Escolha o serviço</h3>
-             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button *ngFor="let s of ['Consulta Geral', 'Limpeza', 'Exame X', 'Retorno']" class="p-4 border border-slate-100 rounded-2xl text-left hover:border-indigo-500 hover:bg-indigo-50/50 transition-all duration-300 group">
-                   <p class="text-sm font-bold text-slate-900 group-hover:text-indigo-700">{{ s }}</p>
-                   <p class="text-xs text-slate-500">30 min • R$ 100,00</p>
-                </button>
-             </div>
-          </section>
-
-          <section>
-             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">2. Escolha o horário</h3>
-             <div class="flex gap-2 overflow-x-auto pb-4 -mx-2 px-2 scrollbar-none">
-                <button *ngFor="let d of days" class="flex-shrink-0 w-20 p-4 border border-slate-100 rounded-2xl text-center hover:border-indigo-500 hover:bg-indigo-50/50 transition-all">
-                   <p class="text-[10px] font-bold text-slate-400 uppercase">{{ d.week }}</p>
-                   <p class="text-lg font-black text-slate-900">{{ d.day }}</p>
-                </button>
-             </div>
-             
-             <div class="grid grid-cols-4 md:grid-cols-6 gap-3 mt-6">
-                <button *ngFor="let time of ['09:00', '09:30', '10:00', '10:30', '11:00', '14:00', '14:30', '15:00']" class="py-3 border border-slate-100 rounded-xl text-center text-sm font-bold text-slate-600 hover:bg-slate-900 hover:text-white transition-all">
-                   {{ time }}
-                </button>
-             </div>
-          </section>
-
-          <button class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95 text-lg mt-10">
-             Confirmar Agendamento
-          </button>
+    
+    <!-- Success State -->
+    <div *ngIf="success()" class="p-20 text-center animate-in fade-in zoom-in duration-500">
+       <div class="w-24 h-24 bg-emerald-500 rounded-full mx-auto mb-8 flex items-center justify-center text-white shadow-2xl shadow-emerald-200">
+          <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
        </div>
+       <h1 class="text-3xl font-black text-slate-900 mb-4">Agendamento Realizado!</h1>
+       <p class="text-slate-500 mb-10 text-lg">Enviamos os detalhes para o seu e-mail.</p>
+       <button (click)="success.set(false)" class="bg-slate-900 text-white font-bold py-4 px-10 rounded-2xl hover:bg-slate-800 transition-all active:scale-95">
+          Fazer outro agendamento
+       </button>
     </div>
+
+    <!-- Booking Form -->
+    <ng-container *ngIf="!success()">
+      <div class="p-10 border-b border-slate-100 text-center">
+         <div class="w-20 h-20 bg-indigo-600 rounded-3xl mx-auto mb-6 flex items-center justify-center text-white text-3xl font-black shadow-2xl shadow-indigo-200 rotate-3 cursor-default">DC</div>
+         <h1 class="text-3xl font-black text-slate-900 tracking-tight">Default Clinic</h1>
+         <p class="text-slate-500 mt-2">Escolha uma data e horário para seu agendamento</p>
+      </div>
+
+      <div class="p-10">
+         <div class="space-y-10">
+            <!-- 1. Estágio: Serviço -->
+            <section>
+               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">1. Escolha o serviço</h3>
+               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <button 
+                    *ngFor="let s of services()" 
+                    (click)="selectService(s)"
+                    [class.border-indigo-500]="selectedService()?.id === s.id"
+                    [class.bg-indigo-50]="selectedService()?.id === s.id"
+                    class="p-4 border border-slate-100 rounded-2xl text-left hover:border-indigo-500 hover:bg-indigo-50/50 transition-all duration-300 group relative overflow-hidden">
+                     <div *ngIf="selectedService()?.id === s.id" class="absolute top-2 right-2 text-indigo-500">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
+                     </div>
+                     <p class="text-sm font-bold text-slate-900 transition-colors" [class.text-indigo-700]="selectedService()?.id === s.id">{{ s.name }}</p>
+                     <p class="text-xs text-slate-500">{{ s.durationMinutes }} min • R$ {{ s.price | number:'1.2-2' }}</p>
+                  </button>
+               </div>
+            </section>
+
+            <!-- 2. Estágio: Data e Hora -->
+            <section>
+               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">2. Escolha o horário</h3>
+               
+               <!-- Dias -->
+               <div class="flex gap-2 overflow-x-auto pb-4 -mx-2 px-2 scrollbar-none">
+                  <button 
+                    *ngFor="let d of days" 
+                    (click)="selectDay(d)"
+                    [class.border-indigo-500]="selectedDay()?.full === d.full"
+                    [class.bg-indigo-50]="selectedDay()?.full === d.full"
+                    class="flex-shrink-0 w-20 p-4 border border-slate-100 rounded-2xl text-center hover:border-indigo-500 hover:bg-indigo-50/50 transition-all">
+                     <p class="text-[10px] font-bold text-slate-400 uppercase" [class.text-indigo-400]="selectedDay()?.full === d.full">{{ d.week }}</p>
+                     <p class="text-lg font-black text-slate-900" [class.text-indigo-700]="selectedDay()?.full === d.full">{{ d.day }}</p>
+                  </button>
+               </div>
+               
+               <!-- Horários (Slots) -->
+               <div class="grid grid-cols-4 md:grid-cols-6 gap-3 mt-6">
+                  <button 
+                    *ngFor="let time of slots" 
+                    (click)="selectSlot(time)"
+                    [class.bg-slate-900]="selectedSlot() === time"
+                    [class.text-white]="selectedSlot() === time"
+                    [class.border-slate-900]="selectedSlot() === time"
+                    class="py-3 border border-slate-100 rounded-xl text-center text-sm font-bold text-slate-600 hover:border-slate-400 transition-all">
+                     {{ time }}
+                  </button>
+               </div>
+            </section>
+
+            <!-- 3. Estágio: Seus Dados -->
+            <section>
+               <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">3. Seus Dados</h3>
+               <div class="space-y-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <input 
+                       type="text" 
+                       [(ngModel)]="customerName"
+                       placeholder="Seu nome completo" 
+                       class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                     <input 
+                       type="email" 
+                       [(ngModel)]="customerEmail"
+                       placeholder="seu@email.com" 
+                       class="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all">
+                  </div>
+               </div>
+            </section>
+
+            <!-- Feedback Error -->
+            <div *ngIf="error()" class="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm font-bold animate-in slide-in-from-top-2 duration-300">
+               {{ error() }}
+            </div>
+
+            <!-- Confirm Button -->
+            <button 
+              (click)="onSubmit()"
+              [disabled]="loading()"
+              class="w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95 text-lg mt-10 relative flex items-center justify-center overflow-hidden">
+               <span *ngIf="!loading()">Confirmar Agendamento</span>
+               <div *ngIf="loading()" class="flex items-center gap-2">
+                  <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  <span>Salvando...</span>
+               </div>
+            </button>
+         </div>
+      </div>
+    </ng-container>
+
   </div>
 </div>

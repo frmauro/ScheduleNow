@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Scheduling.Domain.Entities;
 using Scheduling.Domain.Interfaces;
 using System.Security.Claims;
+using Scheduling.Api.DTOs;
 
 namespace Scheduling.Api.Controllers;
 
@@ -21,9 +22,15 @@ public class EmployeesController(IRepository<Employee> employeeRepository) : Con
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Employee employee)
+    public async Task<IActionResult> Create([FromBody] CreateEmployeeDto dto)
     {
-        employee.TenantId = GetTenantId();
+        var employee = new Employee
+        {
+            Name = dto.Name,
+            Email = dto.Email,
+            ServiceIds = dto.ServiceIds,
+            TenantId = GetTenantId()
+        };
         await _employeeRepository.AddAsync(employee);
         await _employeeRepository.SaveChangesAsync();
         return Ok(employee);
@@ -40,14 +47,14 @@ public class EmployeesController(IRepository<Employee> employeeRepository) : Con
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] Employee employee)
+    public async Task<IActionResult> Update(Guid id, [FromBody] CreateEmployeeDto dto)
     {
         var existing = await _employeeRepository.GetByIdAsync(id);
         if (existing == null || existing.TenantId != GetTenantId()) return NotFound();
 
-        existing.Name = employee.Name;
-        existing.Email = employee.Email;
-        existing.ServiceIds = employee.ServiceIds;
+        existing.Name = dto.Name;
+        existing.Email = dto.Email;
+        existing.ServiceIds = dto.ServiceIds;
 
         _employeeRepository.Update(existing);
         await _employeeRepository.SaveChangesAsync();

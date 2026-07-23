@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Scheduling.Api.DTOs;
 using Scheduling.Domain.Entities;
 using Scheduling.Domain.Enums;
 using Scheduling.Domain.Interfaces;
@@ -18,15 +19,27 @@ public class AppointmentsController(IRepository<Appointment> appointmentReposito
 
     [HttpPost]
     [AllowAnonymous] // Public can book
-    public async Task<IActionResult> Create([FromBody] Appointment appointment)
+    public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto)
     {
-        // Must come from client if anonymous, otherwise from token
-        if (User.Identity?.IsAuthenticated == true && appointment.TenantId == Guid.Empty)
+        var tenantId = dto.TenantId;
+        // Se usuário logado não enviar, pegamos do payload logado
+        if (User.Identity?.IsAuthenticated == true && tenantId == Guid.Empty)
         {
-            appointment.TenantId = GetTenantId();
+            tenantId = GetTenantId();
         }
 
-        appointment.Status = AppointmentStatus.Scheduled;
+        var appointment = new Appointment
+        {
+            ServiceId = dto.ServiceId,
+            EmployeeId = dto.EmployeeId,
+            CustomerName = dto.CustomerName,
+            CustomerEmail = dto.CustomerEmail,
+            StartTime = dto.StartTime,
+            EndTime = dto.EndTime,
+            TenantId = tenantId,
+            Status = AppointmentStatus.Scheduled
+        };
+
         await _appointmentRepository.AddAsync(appointment);
         await _appointmentRepository.SaveChangesAsync();
         

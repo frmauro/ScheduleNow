@@ -10,7 +10,7 @@ public class Employee : Entity
     public List<Guid> ServiceIds { get; set; } = new List<Guid>();
 
     public Guid TenantId { get; set; }
-    public Tenant Tenant { get; set; } = null!;
+    public Tenant? Tenant { get; set; }
 
     public ICollection<Availability> Availabilities { get; set; } = new List<Availability>();
     public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
