@@ -80,6 +80,12 @@ Todas as modificações de código, refatorações, criação de funcionalidades
 ### 4.1 Estrutura de Diretórios
 ```
 ScheduleNow/
+├── .agents/                     # Regras e configurações locais para Agentes de IA
+├── docs/sdd/                    # Estrutura de Spec-Driven Development (SDD)
+│   ├── index.md                 # Registro/Catálogo central (Ledger) de Specs
+│   ├── templates/               # Modelos formais (Feature, Architecture, Bugfix)
+│   ├── workflows/               # Guia de ciclo de vida e processos SDD
+│   └── specs/                   # Especificações ativas e históricas (ex: SPEC-000)
 ├── Backend/
 │   ├── Scheduling.Api/          # Controllers, Middlewares, Program.cs, Configuration
 │   ├── Scheduling.Application/  # DTOs, Interfaces, Services, Validators (FluentValidation)
