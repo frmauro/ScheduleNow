@@ -36,7 +36,15 @@ O desenvolvimento e a manutenção deste repositório são orientados exclusivam
 
 ---
 
-## 🚀 Comandos de Compilação e Verificação
+## 🚀 Comandos de Compilação e Execução
+
+### Script Completo (Backend + Frontend)
+```powershell
+# Executar script automatizado (Build + Run Backend & Frontend)
+.\run.ps1
+# Ou via CMD / Prompt de Comando
+.\run.bat
+```
 
 ### Backend (.NET 9)
 ```powershell
